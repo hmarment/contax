@@ -2,24 +2,11 @@ from rest_framework import serializers
 
 from .models import Contact, EmailAddress
 
-class ContactSerializer(serializers.Serializer):
 
-    id = serializers.IntegerField(read_only=True)
-    first_name = serializers.CharField(max_length=200)
-    last_name = serializers.CharField(max_length=1000)
-    date_of_birth = serializers.DateField()
-    email_addresses = serializers.PrimaryKeyRelatedField(many=True, read_only=True, allow_null=True)
-    created = serializers.DateTimeField(read_only=True)
-    last_updated = serializers.DateTimeField(read_only=True)
-
-    def create(self, validated_data):
-        return Contact.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-        return instance
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = ['id', 'first_name', 'last_name', 'date_of_birth', 'created', 'last_updated']
 
 
 # class EmailAddressSerializer(serializers.Serializer):
