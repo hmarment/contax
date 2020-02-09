@@ -18,7 +18,26 @@ $ git clone git@github.com:hmarment/contax.git
 $ cd contax
 $ mkvirtualenv -p /path/to/python3 contax
 $ poetry install
+```
 
+Set up a Postgres database:
+```bash
+$ psql
+$ CREATE DATABASE contax;
+$ CREATE USER contax WITH PASSWORD 'password';
+$ ALTER ROLE contax SET client_encoding TO 'utf8';
+$ ALTER ROLE contax SET default_transaction_isolation TO 'read committed';
+$ ALTER ROLE contax SET timezone TO 'UTC';
+$ GRANT ALL PRIVILEGES ON DATABASE contax TO contax;
+```
+
+Add a .env file containing your Postgres password:
+```bash
+echo "DB_PASSWORD=password" > .env
+```
+
+Run migrations and launch server:
+```bash
 # run db migrations
 $ cd contax/backend
 $ python manage.py migrate contax
