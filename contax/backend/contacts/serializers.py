@@ -3,10 +3,46 @@ from rest_framework import serializers
 from .models import Contact, EmailAddress
 
 
+class EmailAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailAddress
+        fields = ['name', 'email_address', 'created', 'last_updated']
+
 class ContactSerializer(serializers.ModelSerializer):
+
+    email_addresses = EmailAddressSerializer(many=True, allow_null=True, required=False)
+
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'date_of_birth', 'created', 'last_updated']
+        fields = ['id', 'first_name', 'last_name', 'date_of_birth', 'created', 'last_updated', 'email_addresses']
+
+    def create(self, validated_data):
+        email_addresses_data = validated_data.pop('email_addresses')
+        contact = Contact.objects.create(**validated_data)
+        for email_address_data in email_addresses_data:
+            EmailAddress.objects.create(contact=contact, **email_address_data)
+        return contact
+    
+    def update(self, instance, validated_data):
+        email_addresses_data = validated_data.pop('email_addresses')
+
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+
+        # create or update related email addresses
+        instance_email_addresses = [email.email_address for email in instance.email_addresses.all()]
+        for email_address_data in email_addresses_data:
+            email_address = email_address_data['email_address']
+            if email_address in instance_email_addresses:
+                email = EmailAddress.objects.filter(contact=instance, email_address=email_address)
+                email.update(**email_address_data)
+            else:
+                for email_address_data in email_addresses_data:
+                    EmailAddress.objects.create(contact=instance, **email_address_data)
+        return instance
+
+
 
 
 # class EmailAddressSerializer(serializers.Serializer):
