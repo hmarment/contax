@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Contact(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
@@ -8,11 +9,13 @@ class Contact(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['created']
+        ordering = ["created"]
 
 
 class EmailAddress(models.Model):
-    contact = models.ForeignKey(Contact, related_name='email_addresses', on_delete=models.CASCADE)
+    contact = models.ForeignKey(
+        Contact, related_name="email_addresses", on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=200)
     email_address = models.EmailField()
     created = models.DateTimeField(auto_now_add=True)
@@ -20,7 +23,9 @@ class EmailAddress(models.Model):
 
 
 class PhoneNumber(models.Model):
-    contact = models.ForeignKey(Contact, related_name='phone_numbers', on_delete=models.CASCADE)
+    contact = models.ForeignKey(
+        Contact, related_name="phone_numbers", on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=200)
     created = models.DateTimeField(auto_now_add=True)
@@ -28,7 +33,9 @@ class PhoneNumber(models.Model):
 
 
 class PostalAddress(models.Model):
-    contact = models.ForeignKey(Contact, related_name='postal_addresses', on_delete=models.CASCADE)
+    contact = models.ForeignKey(
+        Contact, related_name="postal_addresses", on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=200)
     street = models.CharField(max_length=200)
     city = models.CharField(max_length=200)
@@ -39,4 +46,3 @@ class PostalAddress(models.Model):
     # contacts = models.ManyToManyField(Contact)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-

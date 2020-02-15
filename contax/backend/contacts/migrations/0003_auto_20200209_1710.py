@@ -6,40 +6,72 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('contacts', '0002_auto_20200209_1613'),
-    ]
+    dependencies = [("contacts", "0002_auto_20200209_1613")]
 
     operations = [
         migrations.AlterField(
-            model_name='emailaddress',
-            name='contact',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='email_addresses', to='contacts.Contact'),
+            model_name="emailaddress",
+            name="contact",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="email_addresses",
+                to="contacts.Contact",
+            ),
         ),
         migrations.CreateModel(
-            name='PostalAddress',
+            name="PostalAddress",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('street', models.CharField(max_length=200)),
-                ('city', models.CharField(max_length=200)),
-                ('state', models.CharField(max_length=200)),
-                ('post_code', models.CharField(max_length=200)),
-                ('country', models.CharField(max_length=2)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('last_updated', models.DateTimeField(auto_now=True)),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='postal_addresses', to='contacts.Contact')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("street", models.CharField(max_length=200)),
+                ("city", models.CharField(max_length=200)),
+                ("state", models.CharField(max_length=200)),
+                ("post_code", models.CharField(max_length=200)),
+                ("country", models.CharField(max_length=2)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("last_updated", models.DateTimeField(auto_now=True)),
+                (
+                    "contact",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="postal_addresses",
+                        to="contacts.Contact",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PhoneNumber',
+            name="PhoneNumber",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('phone_number', models.CharField(max_length=200)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('last_updated', models.DateTimeField(auto_now=True)),
-                ('contact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='phone_numbers', to='contacts.Contact')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("phone_number", models.CharField(max_length=200)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("last_updated", models.DateTimeField(auto_now=True)),
+                (
+                    "contact",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="phone_numbers",
+                        to="contacts.Contact",
+                    ),
+                ),
             ],
         ),
     ]

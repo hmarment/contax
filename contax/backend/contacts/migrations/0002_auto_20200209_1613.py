@@ -5,23 +5,11 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('contacts', '0001_initial'),
-    ]
+    dependencies = [("contacts", "0001_initial")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='postaladdress',
-            name='contacts',
-        ),
-        migrations.AlterModelOptions(
-            name='contact',
-            options={'ordering': ['created']},
-        ),
-        migrations.DeleteModel(
-            name='PhoneNumber',
-        ),
-        migrations.DeleteModel(
-            name='PostalAddress',
-        ),
+        migrations.RemoveField(model_name="postaladdress", name="contacts"),
+        migrations.AlterModelOptions(name="contact", options={"ordering": ["created"]}),
+        migrations.DeleteModel(name="PhoneNumber"),
+        migrations.DeleteModel(name="PostalAddress"),
     ]
