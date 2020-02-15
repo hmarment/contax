@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from .models import Contact, EmailAddress, PhoneNumber, PostalAddress
+from .models import (
+    Contact,
+    EmailAddress,
+    PhoneNumber,
+    PostalAddress,
+    PostalAddressContact,
+)
 
 
 class EmailAddressSerializer(serializers.ModelSerializer):
@@ -15,11 +21,38 @@ class PhoneNumberSerializer(serializers.ModelSerializer):
         fields = ["name", "phone_number", "created", "last_updated"]
 
 
+class PostalAddressContactSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source="contact.id")
+    first_name = serializers.ReadOnlyField(source="contact.first_name")
+    last_name = serializers.ReadOnlyField(source="contact.last_name")
+
+    class Meta:
+        model = PostalAddressContact
+        fields = ["id", "first_name", "last_name"]
+
+
+class ContactPostalAddressSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source="postal_address.id")
+    street = serializers.ReadOnlyField(source="postal_address.street")
+    city = serializers.ReadOnlyField(source="postal_address.city")
+    state = serializers.ReadOnlyField(source="postal_address.state")
+    post_code = serializers.ReadOnlyField(source="postal_address.post_code")
+    country = serializers.ReadOnlyField(source="postal_address.country")
+
+    class Meta:
+        model = PostalAddressContact
+        fields = ["id", "name", "street", "city", "state", "post_code", "country"]
+
+
 class PostalAddressSerializer(serializers.ModelSerializer):
+    contacts = PostalAddressContactSerializer(
+        source="postaladdresscontact_set", many=True, read_only=True
+    )
+
     class Meta:
         model = PostalAddress
         fields = [
-            "name",
+            "id",
             "street",
             "city",
             "state",
@@ -27,6 +60,7 @@ class PostalAddressSerializer(serializers.ModelSerializer):
             "country",
             "created",
             "last_updated",
+            "contacts",
         ]
 
 
@@ -34,9 +68,12 @@ class ContactSerializer(serializers.ModelSerializer):
 
     email_addresses = EmailAddressSerializer(many=True, allow_null=True, required=False)
     phone_numbers = PhoneNumberSerializer(many=True, allow_null=True, required=False)
-    postal_addresses = PostalAddressSerializer(
-        many=True, allow_null=True, required=False
+    postal_addresses = ContactPostalAddressSerializer(
+        source="postaladdresscontact_set", many=True, read_only=True
     )
+    # postal_addresses = PostalAddressSerializer(
+    #     many=True, allow_null=True, required=False
+    # )
 
     class Meta:
         model = Contact
@@ -55,7 +92,6 @@ class ContactSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         email_addresses_data = validated_data.pop("email_addresses")
         phone_numbers_data = validated_data.pop("phone_numbers")
-        postal_addresses_data = validated_data.pop("postal_addresses")
 
         contact = Contact.objects.create(**validated_data)
 
@@ -65,15 +101,22 @@ class ContactSerializer(serializers.ModelSerializer):
         for phone_number_data in phone_numbers_data:
             PhoneNumber.objects.create(contact=contact, **phone_number_data)
 
+        # if there are any new contact address links, add them
+        postal_addresses_data = self.initial_data.get("postal_addresses", list())
         for postal_address_data in postal_addresses_data:
-            PostalAddress.objects.create(contact=contact, **postal_address_data)
-
+            id = postal_address_data.get("id")
+            name = postal_address_data.get("name")
+            postal_address = PostalAddress.objects.get(pk=id)
+            PostalAddressContact(
+                contact=contact, postal_address=postal_address, name=name
+            ).save()
+        contact.save()
+        # PostalAddress.objects.create(contact=contact, **postal_address_data)
         return contact
 
     def update(self, instance, validated_data):
         email_addresses_data = validated_data.pop("email_addresses")
         phone_numbers_data = validated_data.pop("phone_numbers")
-        postal_addresses_data = validated_data.pop("postal_addresses")
 
         for key, value in validated_data.items():
             setattr(instance, key, value)
@@ -109,20 +152,43 @@ class ContactSerializer(serializers.ModelSerializer):
                 for phone_number_data in phone_numbers_data:
                     PhoneNumber.objects.create(contact=instance, **phone_number_data)
 
-        # create or update related postal addresses
-        instance_postal_addresses = [
-            address.name for address in instance.postal_addresses.all()
-        ]
+        # # create or update related postal addresses
+        # GroupMember.objects.filter(group=instance).delete()
+        # members = self.initial_data.get("members")
+        # for member in members:
+        #     id = member.get("id")
+        #     role = member.get("role")
+        #     new_member = Member.objects.get(pk=id)
+        #     GroupMember(group=instance, member=new_member, role=role).save()
+
+        # instance.__dict__.update(**validated_data)
+        # instance.save()
+
+        postal_addresses_data = self.initial_data.get("postal_addresses", list())
+        instance_postal_addresses = PostalAddressContact.objects.filter(
+            contact_id=instance.id
+        )
         for postal_address_data in postal_addresses_data:
-            postal_address = postal_address_data["name"]
-            if postal_address in instance_postal_addresses:
-                address = PostalAddress.objects.filter(contact=instance, name=name)
-                address.update(**postal_address_data)
-            else:
-                for postal_address_data in postal_addresses_data:
-                    PostalAddress.objects.create(
-                        contact=instance, **postal_address_data
-                    )
+            id = postal_address_data.get("id")
+            name = postal_address_data.get("name")
+
+            # first check whether there's already an existing entry for contact + address
+            matched_addresses = [
+                address
+                for address in instance_postal_addresses
+                if address.postal_address_id == id
+            ]
+
+            if len(matched_addresses) == 0:
+                PostalAddressContact.objects.create(
+                    contact=instance, postal_address_id=id, name=name
+                )
+            # only update if the name has changed
+            if len(matched_addresses) == 1 and matched_addresses[0].name != name:
+                contact_postal_address = PostalAddressContact.objects.filter(
+                    contact=instance, postal_address_id=id
+                )
+                contact_postal_address.update(name=name)
 
         return instance
 

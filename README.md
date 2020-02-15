@@ -40,7 +40,7 @@ Run migrations and launch server:
 ```bash
 # run db migrations
 $ cd contax/backend
-$ python manage.py migrate contax
+$ python manage.py migrate contacts
 
 # backend dev server:
 python manage.py runserver
