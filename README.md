@@ -11,6 +11,7 @@ Dependencies:
 - Your virtualenv tool of choice (strongly recommended)
 - [Poetry](https://poetry.eustace.io/docs/) dependency manager
 - node.js & npm (v6 or later recommended, only required for development)
+- Vue.js
 
 ```bash
 # install
