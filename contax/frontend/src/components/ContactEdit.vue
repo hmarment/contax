@@ -6,26 +6,27 @@
                 <input
                     type="text"
                     class="form-control"
-                    id="name"
+                    id="first_name"
                     v-model="contact.first_name"
-                    name="name"
                     placeholder="Enter first name"
                     >
-                <div class="invalid-feedback">
-                    Please provide a valid First Name.
-                </div>
+
                 <label for="first_name">Last Name</label>
                 <input
                     type="text"
                     class="form-control"
-                    id="name"
+                    id="last_name"
                     v-model="contact.last_name"
-                    name="name"
                     placeholder="Enter last name"
                     >
-                <div class="invalid-feedback">
-                    Please provide a valid Last Name.
-                </div>
+                <label for="data_of_birth">Last Name</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="data_of_birth"
+                    v-model="contact.date_of_birth"
+                    placeholder="Enter date of birth"
+                    >
             </div>
             <!-- <div class="form-group">
                 <label for="currency">Currency</label>

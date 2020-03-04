@@ -8,6 +8,11 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
+      path: '/',
+      name: 'contacts',
+      component: Index
+    },
+    {
       path: '/contacts',
       name: 'contacts',
       component: Index

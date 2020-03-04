@@ -1,12 +1,16 @@
 <template>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <h2><router-link to="/contacts">Contacts</router-link></h2>
-        <router-link to="/create" class="btn btn-sm btn-primary">Add Contact</router-link>
-
-        <router-view />
-      </div>
-    </div>
+  <div id="app">
+    <b-navbar toggleable="md" type="dark" variant="dark">
+      <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+      <b-navbar-brand to="/">Contax</b-navbar-brand>
+      <b-collapse is-nav id="nav_collapse">
+        <b-navbar-nav>
+          <b-nav-item to="/">Home</b-nav-item>
+          <b-nav-item to="/contacts">Contacts</b-nav-item>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+    <!-- routes will be rendered here -->
+    <router-view />
   </div>
 </template>
