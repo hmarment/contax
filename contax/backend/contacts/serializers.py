@@ -10,15 +10,28 @@ from .models import (
 
 
 class EmailAddressSerializer(serializers.ModelSerializer):
+    contact_id = serializers.IntegerField()
+
     class Meta:
         model = EmailAddress
-        fields = ["name", "email_address"]
+        fields = ["id", "name", "email_address", "contact_id"]
+
+    def create(self, validated_data):
+        contact_id = validated_data.pop("contact_id")
+        contact = Contact.objects.get(id=contact_id)
+        return EmailAddress.objects.create(contact=contact, **validated_data)
+
+
+class ContactEmailAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailAddress
+        fields = ["id", "name", "email_address"]
 
 
 class PhoneNumberSerializer(serializers.ModelSerializer):
     class Meta:
         model = PhoneNumber
-        fields = ["name", "phone_number"]
+        fields = ["id", "name", "phone_number"]
 
 
 class PostalAddressContactSerializer(serializers.ModelSerializer):
@@ -66,7 +79,9 @@ class PostalAddressSerializer(serializers.ModelSerializer):
 
 class ContactSerializer(serializers.ModelSerializer):
 
-    email_addresses = EmailAddressSerializer(many=True, allow_null=True, required=False)
+    email_addresses = ContactEmailAddressSerializer(
+        many=True, allow_null=True, required=False
+    )
     phone_numbers = PhoneNumberSerializer(many=True, allow_null=True, required=False)
     postal_addresses = ContactPostalAddressSerializer(
         source="postaladdresscontact_set", many=True, read_only=True
