@@ -6,9 +6,10 @@
         title="Edit Contact"
         v-bind="contact"
       >
+      <hr>
       <b-form @submit="saveContact">
         <b-form-group
-            label-cols-lg="3"
+            label-cols-lg="4"
             label="Contact Details"
             label-size="lg"
             label-class="font-weight-bold pt-0"
@@ -40,8 +41,9 @@
             </b-form-group>
         </b-form-group>
         <!-- Email Addresses -->
+        <hr>
         <b-form-group
-          label-cols-lg="3"
+          label-cols-lg="4"
           label="Email Addresses"
           label-size="lg"
           label-class="font-weight-bold pt-0"
@@ -59,24 +61,47 @@
             >
               <b-form-input id="email-name" type="text" v-model="email.name"></b-form-input>
             </b-form-group>
-
             <b-form-group
               label-cols-sm="3"
-              label="Email Address:"
+              label="Email:"
               label-align-sm="right"
-              label-for="email"
+              label-for="email-address"
             >
-              <b-form-input id="email" type="email" v-model="email.email_address"></b-form-input>
+              <b-input-group prepend="@">
+                <b-form-input id="email-address" type="text" v-model="email.email_address"></b-form-input>
+              </b-input-group>
             </b-form-group>
+            <button type="submit" class="btn btn-primary" v-on:click="deleteEmaillAddress(email)">Delete</button>
+            <hr>
           </b-form-group>
+          <b-form-group
+              label-cols-sm="3"
+              label="Name:"
+              label-align-sm="right"
+              label-for="email-name"
+            >
+              <b-form-input id="email-name" type="text" v-model="emailToAdd.name" placeholder="Add a new email address"></b-form-input>
+            </b-form-group>
+            <b-form-group
+              label-cols-sm="3"
+              label="Email:"
+              label-align-sm="right"
+              label-for="email-address"
+            >
+              <b-input-group prepend="@">
+                <b-form-input id="email-address" type="text" v-model="emailToAdd.email_address"></b-form-input>
+              </b-input-group>
+            </b-form-group>
+            <button type="submit" class="btn btn-primary" v-on:click="addEmaillAddress">Add</button>
         </b-form-group>
         <!-- Phone Numbers -->
+        <hr>
         <b-form-group
-          label-cols-lg="3"
+          label-cols-lg="4"
           label="Phone Numbers"
           label-size="lg"
           label-class="font-weight-bold pt-0"
-          class="mb-0"
+          class="mb-2"
         >
           <b-form-group
             v-for="(phone, phoneIndex) in contact.phone_numbers"
@@ -90,24 +115,27 @@
             >
               <b-form-input id="phone-name" type="text" v-model="phone.name"></b-form-input>
             </b-form-group>
-
             <b-form-group
               label-cols-sm="3"
-              label="Email Address:"
+              label="Name:"
               label-align-sm="right"
-              label-for="email"
+              label-for="phone-name"
             >
-              <b-form-input id="phone" type="text" v-model="phone.phone_number"></b-form-input>
+              <b-input-group prepend="#">
+              <b-form-input id="phone-number" type="text" v-model="phone.phone_number"></b-form-input>
+              </b-input-group>
             </b-form-group>
+            <hr>
           </b-form-group>
         </b-form-group>
         <!-- Postal Addresses -->
+        <hr>
         <b-form-group
-          label-cols-lg="3"
+          label-cols-lg="4"
           label="Postal Addresses"
           label-size="lg"
           label-class="font-weight-bold pt-0"
-          class="mb-0"
+          class="mb-2"
         >
           <b-form-group
             v-for="(address, addressIndex) in contact.postal_addresses"
@@ -121,56 +149,24 @@
             >
               <b-form-input id="address-name" type="text" v-model="address.name"></b-form-input>
             </b-form-group>
-
             <b-form-group
               label-cols-sm="3"
-              label="Street:"
+              label="Address:"
               label-align-sm="right"
-              label-for="street"
+              label-for="address"
             >
-              <b-form-input id="street" v-model="address.street"></b-form-input>
+                <b-form-input
+                readonly
+                id="address"
+                size="md"
+                :placeholder="(address.street + ', ' + address.city + ', ' + address.state + ', ' + address.post_code + ', ' + address.country)">
+              </b-form-input>
             </b-form-group>
-
-            <b-form-group
-              label-cols-sm="3"
-              label="City:"
-              label-align-sm="right"
-              label-for="city"
-            >
-              <b-form-input id="city" v-model="address.city"></b-form-input>
-            </b-form-group>
-
-            <b-form-group
-              label-cols-sm="3"
-              label="Postcode:"
-              label-align-sm="right"
-              label-for="postcode"
-            >
-              <b-form-input id="postcode" v-model="address.post_code"></b-form-input>
-            </b-form-group>
-
-            <b-form-group
-              label-cols-sm="3"
-              label="State:"
-              label-align-sm="right"
-              label-for="state"
-            >
-              <b-form-input id="state" v-model="address.state"></b-form-input>
-            </b-form-group>
-
-            <b-form-group
-              label-cols-sm="3"
-              label="Country:"
-              label-align-sm="right"
-              label-for="country"
-            >
-              <b-form-input id="country" v-model="address.country"></b-form-input>
-            </b-form-group>
+            <hr>
           </b-form-group>
         </b-form-group>
       </b-form>
-            <button type="submit" class="btn btn-primary" v-on:click="saveContact">Submit</button>
-        <!-- </form> -->
+          <button type="submit" class="btn btn-primary" v-on:click="saveContact">Submit</button>
       </b-card>
     </b-container>
     </div>
@@ -183,9 +179,10 @@ import api from '@/api'
 export default {
   data () {
     return {
-      contact: {
-        first_name: '',
-        last_name: ''
+      contact: {},
+      emailToAdd: {
+        name: '',
+        email_address: ''
       },
       submitted: false
     }
@@ -196,18 +193,6 @@ export default {
     })
   },
   methods: {
-    update: function (e) {
-      this.$validator.validate().then(result => {
-        this.submitted = true
-        if (!result) {
-          return
-        }
-        api.updateContact(this.contact)
-          .then(response => {
-            this.$router.push('/')
-          })
-      })
-    },
     async saveContact () {
       if (this.contact.id) {
         await api.updateContact(this.contact.id, this.contact)
@@ -215,6 +200,16 @@ export default {
             this.$router.push('/')
           })
       }
+    },
+    async addEmaillAddress () {
+      if (this.emailToAdd.name && this.emailToAdd.email_address) {
+        this.contact.email_addresses.push(this.emailToAdd)
+      }
+    },
+    deleteEmaillAddress (email) {
+      this.contact.email_addresses = this.contact.email_addresses.filter(e => e.id !== email.id)
+      console.log(this.contact.email_addresses)
+      api.updateContact(this.contact.id, this.contact)
     }
   }
 }
