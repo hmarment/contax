@@ -92,7 +92,7 @@
                 <b-form-input id="email-address" type="text" v-model="emailToAdd.email_address"></b-form-input>
               </b-input-group>
             </b-form-group>
-            <button type="submit" class="btn btn-primary" v-on:click="addEmaillAddress">Add</button>
+            <button type="submit" class="btn btn-primary" v-on:click="addEmailAddress(emailToAdd)">Add</button>
         </b-form-group>
         <!-- Phone Numbers -->
         <hr>
@@ -201,15 +201,11 @@ export default {
           })
       }
     },
-    async addEmaillAddress () {
-      if (this.emailToAdd.name && this.emailToAdd.email_address) {
-        this.contact.email_addresses.push(this.emailToAdd)
-      }
+    async addEmailAddress (email) {
+      api.addContactEmailAddress(this.contact.id, email)
     },
-    deleteEmaillAddress (email) {
-      this.contact.email_addresses = this.contact.email_addresses.filter(e => e.id !== email.id)
-      console.log(this.contact.email_addresses)
-      api.updateContact(this.contact.id, this.contact)
+    async deleteEmaillAddress (email) {
+      api.deleteContactEmailAddress(this.contact.id, email.id)
     }
   }
 }

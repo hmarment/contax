@@ -35,6 +35,12 @@ export default {
   deleteContact (id) {
     return this.execute('delete', `api/contacts/${id}`)
   },
+  addContactEmailAddress (id, data) {
+    return this.execute('post', `api/contacts/${id}/email`, data)
+  },
+  deleteContactEmailAddress (contactId, emailId) {
+    return this.execute('delete', `api/contacts/${contactId}/email/${emailId}`)
+  },
   // Addresses
   getAddresses () {
     return this.execute('get', 'api/postal_addresses/')
