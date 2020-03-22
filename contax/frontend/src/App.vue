@@ -7,6 +7,7 @@
         <b-navbar-nav>
           <b-nav-item to="/">Home</b-nav-item>
           <b-nav-item to="/contacts">Contacts</b-nav-item>
+          <b-nav-item to="/addresses">Addresses</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>

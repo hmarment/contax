@@ -19,6 +19,7 @@ export default {
       return req.data
     })
   },
+  // Contacts
   getContacts () {
     return this.execute('get', 'api/contacts/')
   },
@@ -33,5 +34,21 @@ export default {
   },
   deleteContact (id) {
     return this.execute('delete', `api/contacts/${id}`)
+  },
+  // Addresses
+  getAddresses () {
+    return this.execute('get', 'api/postal_addresses/')
+  },
+  getAddress (id) {
+    return this.execute('get', `api/postal_addresses/${id}`)
+  },
+  createAddress (data) {
+    return this.execute('post', 'api/postal_addresses/', data)
+  },
+  updateAddress (id, data) {
+    return this.execute('put', `api/postal_addresses/${id}`, data)
+  },
+  deleteAddress (id) {
+    return this.execute('delete', `api/postal_addresses/${id}`)
   }
 }
