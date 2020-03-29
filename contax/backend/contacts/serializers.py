@@ -146,8 +146,7 @@ class ContactSerializer(serializers.ModelSerializer):
                 )
                 email.update(**email_address_data)
             else:
-                for email_address_data in email_addresses_data:
-                    EmailAddress.objects.create(contact=instance, **email_address_data)
+                EmailAddress.objects.create(contact=instance, **email_address_data)
 
         # create or update related phone numbers
         instance_phone_numbers = [
@@ -161,8 +160,7 @@ class ContactSerializer(serializers.ModelSerializer):
                 )
                 number.update(**phone_number_data)
             else:
-                for phone_number_data in phone_numbers_data:
-                    PhoneNumber.objects.create(contact=instance, **phone_number_data)
+                PhoneNumber.objects.create(contact=instance, **phone_number_data)
 
         postal_addresses_data = self.initial_data.get("postal_addresses", list())
         instance_postal_addresses = PostalAddressContact.objects.filter(
