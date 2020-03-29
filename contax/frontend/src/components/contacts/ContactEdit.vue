@@ -7,7 +7,7 @@
         v-bind="contact"
       >
       <hr>
-      <b-form @submit="saveContact">
+      <b-form>
         <b-form-group
             label-cols-lg="4"
             label="Contact Details"
@@ -71,7 +71,7 @@
                 <b-form-input id="email-address" type="text" v-model="email.email_address"></b-form-input>
               </b-input-group>
             </b-form-group>
-            <button type="submit" class="btn btn-primary" v-on:click="deleteEmaillAddress(email)">Delete</button>
+            <button id="email-address-delete" type="submit" class="btn btn-primary" v-on:click="deleteEmaillAddress(email)">Delete</button>
             <hr>
           </b-form-group>
           <b-form-group
@@ -92,7 +92,7 @@
                 <b-form-input id="email-address" type="text" v-model="emailToAdd.email_address"></b-form-input>
               </b-input-group>
             </b-form-group>
-            <button type="submit" class="btn btn-primary" v-on:click="addEmailAddress(emailToAdd)">Add</button>
+            <button id="email-address-add" type="submit" class="btn btn-primary" v-on:click="addEmailAddress(emailToAdd)">Add</button>
         </b-form-group>
         <!-- Phone Numbers -->
         <hr>
@@ -166,7 +166,7 @@
           </b-form-group>
         </b-form-group>
       </b-form>
-          <button type="submit" class="btn btn-primary" v-on:click="saveContact">Submit</button>
+          <button id="contact-update" type="submit" class="btn btn-primary" v-on:click="saveContact">Submit</button>
       </b-card>
     </b-container>
     </div>
@@ -201,11 +201,25 @@ export default {
           })
       }
     },
+    async refreshContact () {
+      // clear out the add email form
+      this.emailToAdd.name = ''
+      this.emailToAdd.email_address = ''
+      api.getContact(this.$route.params.id).then(response => {
+        this.contact = response
+      })
+    },
     async addEmailAddress (email) {
       api.addContactEmailAddress(this.contact.id, email)
+        .then(response => {
+          this.refreshContact()
+        })
     },
     async deleteEmaillAddress (email) {
       api.deleteContactEmailAddress(this.contact.id, email.id)
+        .then(response => {
+          this.refreshContact()
+        })
     }
   }
 }
