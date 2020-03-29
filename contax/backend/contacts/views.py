@@ -55,6 +55,15 @@ def contact_add_email_address(request, contact_id):
 
     if request.method == "POST":
         data = request.data
+        email_address_to_add = data["email_address"]
+        contact_email_addresses = [
+            email.email_address
+            for email in EmailAddress.objects.filter(contact_id=contact_id).all()
+        ]
+        # check if it already exists
+        if email_address_to_add in contact_email_addresses:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
         data["contact_id"] = contact_id
         serializer = EmailAddressSerializer(data=data)
         if serializer.is_valid():
@@ -72,7 +81,7 @@ def contact_email_address_detail(request, contact_id, email_id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "PUT":
-        serializer = ContactSerializer(contact, data=request.data)
+        serializer = EmailAddressSerializer(email_address, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
