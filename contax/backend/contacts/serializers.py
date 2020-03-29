@@ -10,6 +10,8 @@ from .models import (
 
 
 class EmailAddressSerializer(serializers.ModelSerializer):
+    """Serializer for EmailAddress objects."""
+
     contact_id = serializers.IntegerField()
 
     class Meta:
@@ -23,18 +25,24 @@ class EmailAddressSerializer(serializers.ModelSerializer):
 
 
 class ContactEmailAddressSerializer(serializers.ModelSerializer):
+    """Serializer for Contact EmailAddress objects."""
+
     class Meta:
         model = EmailAddress
         fields = ["id", "name", "email_address"]
 
 
 class PhoneNumberSerializer(serializers.ModelSerializer):
+    """Serializer for PhoneNumber objects."""
+
     class Meta:
         model = PhoneNumber
         fields = ["id", "name", "phone_number"]
 
 
 class PostalAddressContactSerializer(serializers.ModelSerializer):
+    """Serializer for Contact objects linked to a PostalAddress."""
+
     id = serializers.ReadOnlyField(source="contact.id")
     first_name = serializers.ReadOnlyField(source="contact.first_name")
     last_name = serializers.ReadOnlyField(source="contact.last_name")
@@ -45,6 +53,8 @@ class PostalAddressContactSerializer(serializers.ModelSerializer):
 
 
 class ContactPostalAddressSerializer(serializers.ModelSerializer):
+    """Serializer for PostalAddress objects linked to a Contact."""
+
     id = serializers.ReadOnlyField(source="postal_address.id")
     street = serializers.ReadOnlyField(source="postal_address.street")
     city = serializers.ReadOnlyField(source="postal_address.city")
@@ -58,6 +68,8 @@ class ContactPostalAddressSerializer(serializers.ModelSerializer):
 
 
 class PostalAddressSerializer(serializers.ModelSerializer):
+    """Serializer for PostalAddress objects."""
+
     contacts = PostalAddressContactSerializer(
         source="postaladdresscontact_set", many=True, read_only=True
     )
@@ -78,6 +90,7 @@ class PostalAddressSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
+    """Serializer for Contact objects."""
 
     email_addresses = ContactEmailAddressSerializer(
         many=True, allow_null=True, required=False

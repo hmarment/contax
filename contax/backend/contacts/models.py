@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Contact(models.Model):
+    """Contact model for storing name, date of birth and contact information for a person."""
+
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     date_of_birth = models.DateField()
@@ -13,6 +15,8 @@ class Contact(models.Model):
 
 
 class EmailAddress(models.Model):
+    """Model for storing Email Addresses, linked to a contact."""
+
     contact = models.ForeignKey(
         Contact, related_name="email_addresses", on_delete=models.CASCADE
     )
@@ -23,6 +27,8 @@ class EmailAddress(models.Model):
 
 
 class PhoneNumber(models.Model):
+    """Model for storing Phone Numbers, linked to a contact."""
+
     contact = models.ForeignKey(
         Contact, related_name="phone_numbers", on_delete=models.CASCADE
     )
@@ -33,9 +39,8 @@ class PhoneNumber(models.Model):
 
 
 class PostalAddress(models.Model):
-    # contact = models.ForeignKey(
-    #     Contact, related_name="postal_addresses", on_delete=models.CASCADE
-    # )
+    """Model for storing Addresses."""
+
     contacts = models.ManyToManyField(
         Contact,
         blank=True,
@@ -48,12 +53,12 @@ class PostalAddress(models.Model):
     post_code = models.CharField(max_length=200)
     # post_code = models.RegexField(regex=r'[0-9]{4,5}|[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}')
     country = models.CharField(max_length=2)
-    # contacts = models.ManyToManyField(Contact)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
 
 class PostalAddressContact(models.Model):
+    """Model for storing Contact to Address relationships."""
 
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
     postal_address = models.ForeignKey(PostalAddress, on_delete=models.CASCADE)

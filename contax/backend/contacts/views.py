@@ -52,10 +52,9 @@ def contact_detail(request, contact_id):
 @api_view(["POST"])
 def contact_add_email_address(request, contact_id):
     """Add a new contact email address."""
-
     if request.method == "POST":
-        data = request.data
-        email_address_to_add = data["email_address"]
+        email_to_add = request.data
+        email_address_to_add = email_to_add["email_address"]
         contact_email_addresses = [
             email.email_address
             for email in EmailAddress.objects.filter(contact_id=contact_id).all()
@@ -64,8 +63,8 @@ def contact_add_email_address(request, contact_id):
         if email_address_to_add in contact_email_addresses:
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        data["contact_id"] = contact_id
-        serializer = EmailAddressSerializer(data=data)
+        email_to_add["contact_id"] = contact_id
+        serializer = EmailAddressSerializer(data=email_to_add)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
