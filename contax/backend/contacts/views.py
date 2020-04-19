@@ -50,7 +50,7 @@ def get_update_or_delete_contact(request, contact_id):
 
 
 @api_view(["POST"])
-def contact_add_email_address(request, contact_id):
+def add_contact_email_address(request, contact_id):
     """Add a new contact email address."""
     if request.method == "POST":
         email_to_add = request.data
@@ -72,8 +72,8 @@ def contact_add_email_address(request, contact_id):
 
 
 @api_view(["PUT", "DELETE"])
-def contact_email_address_detail(request, contact_id, email_id):
-    """Add or delete a contact email address."""
+def update_or_delete_contact_email_address(request, contact_id, email_id):
+    """Update or delete a contact email address."""
     try:
         email_address = EmailAddress.objects.get(id=email_id)
     except EmailAddress.DoesNotExist:
@@ -83,7 +83,7 @@ def contact_email_address_detail(request, contact_id, email_id):
         serializer = EmailAddressSerializer(email_address, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "DELETE":
@@ -92,7 +92,7 @@ def contact_email_address_detail(request, contact_id, email_id):
 
 
 @api_view(["GET", "POST"])
-def postal_address_list(request):
+def list_or_add_contact_postal_address(request):
     """List all postal addresses, or create a new postal address."""
     if request.method == "GET":
         snippets = PostalAddress.objects.all()
@@ -108,7 +108,7 @@ def postal_address_list(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-def postal_address_detail(request, contact_id):
+def get_update_or_delete_contact_postal_address(request, contact_id):
     """Retrieve, update or delete a postal_address."""
     try:
         postal_address = PostalAddress.objects.get(id=contact_id)
@@ -123,7 +123,7 @@ def postal_address_detail(request, contact_id):
         serializer = PostalAddressSerializer(postal_address, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "DELETE":

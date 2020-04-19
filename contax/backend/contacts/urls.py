@@ -9,11 +9,24 @@ urlpatterns = [
         views.get_update_or_delete_contact,
         name="get_delete_update_contact",
     ),
-    path("contacts/<int:contact_id>/email", views.contact_add_email_address),
+    path(
+        "contacts/<int:contact_id>/email",
+        views.add_contact_email_address,
+        name="add_contact_email_address",
+    ),
     path(
         "contacts/<int:contact_id>/email/<int:email_id>",
-        views.contact_email_address_detail,
+        views.update_or_delete_contact_email_address,
+        name="update_or_delete_contact_email_address",
     ),
-    path("postal_addresses/", views.postal_address_list),
-    path("postal_addresses/<int:contact_id>", views.postal_address_detail),
+    path(
+        "postal_addresses/",
+        views.list_or_add_contact_postal_address,
+        name="list_or_add_contact_postal_address",
+    ),
+    path(
+        "postal_addresses/<int:contact_id>",
+        views.get_update_or_delete_contact_postal_address,
+        name="get_update_or_delete_contact_postal_address",
+    ),
 ]

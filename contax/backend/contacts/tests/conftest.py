@@ -1,6 +1,6 @@
 import pytest
 
-from contacts.models import Contact
+from contacts.models import Contact, EmailAddress
 
 
 @pytest.fixture
@@ -17,6 +17,19 @@ def contact_factory(db):
 
 
 @pytest.fixture
+def email_factory(db):
+    """Create an email address."""
+
+    def create_email_address(contact, name, email_address):
+        email = EmailAddress.objects.create(
+            contact=contact, name=name, email_address=email_address,
+        )
+        return email
+
+    return create_email_address
+
+
+@pytest.fixture
 def contact_1(db, contact_factory):
     """Create a first test contact."""
     return contact_factory(
@@ -29,4 +42,13 @@ def contact_2(db, contact_factory):
     """Create a second test contact."""
     return contact_factory(
         first_name="John", last_name="Smith", date_of_birth="1990-01-01"
+    )
+
+
+@pytest.fixture
+def contact_1_email(db, contact_1, email_factory):
+    """Add an email address to test contact 1."""
+    email_address = f"{contact_1.first_name}@{contact_1.last_name}.com"
+    return email_factory(
+        contact=contact_1, name="Personal", email_address=email_address
     )
