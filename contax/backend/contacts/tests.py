@@ -1,5 +1,8 @@
 import pytest
 
+from django.urls import reverse
+from rest_framework.test import APIClient
+
 from .models import Contact
 
 
@@ -41,3 +44,15 @@ def test_should_create_user(contact_1):
 
 def test_should_create_two_users(contact_1, contact_2):
     assert contact_1.pk != contact_2.pk
+
+
+@pytest.fixture
+def client():
+    return APIClient()
+
+
+def test_contact_list_view(client, contact_1):
+    response = client.get("/api/contacts/")
+    content = response.content.decode()
+    assert response.status_code == 200
+    assert contact_1.first_name in content and contact_1.last_name in content
