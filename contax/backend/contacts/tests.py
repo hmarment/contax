@@ -4,17 +4,40 @@ from .models import Contact
 
 
 @pytest.fixture
-def contact_1(db):
-    contact = Contact.objects.create(
-        first_name="First", last_name="Last", date_of_birth="2000-01-01"
+def contact_factory(db):
+    """Create a contact."""
+
+    def create_contact(first_name, last_name, date_of_birth):
+        contact = Contact.objects.create(
+            first_name=first_name, last_name=last_name, date_of_birth=date_of_birth,
+        )
+        return contact
+
+    return create_contact
+
+
+@pytest.fixture
+def contact_1(db, contact_factory):
+    return contact_factory(
+        first_name="Jane", last_name="Doe", date_of_birth="2000-01-01"
     )
-    return contact
 
 
-def test_create_user(db, contact_1):
+@pytest.fixture
+def contact_2(db, contact_factory):
+    return contact_factory(
+        first_name="John", last_name="Smith", date_of_birth="1990-01-01"
+    )
+
+
+def test_should_create_user(contact_1):
     contact = Contact.objects.get(pk=1)
     assert (
-        contact.first_name == "First"
-        and contact.last_name == "Last"
+        contact.first_name == "Jane"
+        and contact.last_name == "Doe"
         and contact.date_of_birth.isoformat() == "2000-01-01"
     )
+
+
+def test_should_create_two_users(contact_1, contact_2):
+    assert contact_1.pk != contact_2.pk
