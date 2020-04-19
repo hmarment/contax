@@ -3,10 +3,10 @@ from rest_framework import routers
 from . import views
 
 urlpatterns = [
-    path("contacts/", views.contact_list, name="list_or_create_contacts"),
+    path("contacts/", views.list_or_create_contact, name="list_or_create_contacts"),
     path(
         "contacts/<int:contact_id>",
-        views.contact_detail,
+        views.get_update_or_delete_contact,
         name="get_delete_update_contact",
     ),
     path("contacts/<int:contact_id>/email", views.contact_add_email_address),

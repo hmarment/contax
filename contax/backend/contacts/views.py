@@ -10,7 +10,7 @@ from .serializers import (
 
 
 @api_view(["GET", "POST"])
-def contact_list(request):
+def list_or_create_contact(request):
     """List all contacts, or create a new contact."""
     if request.method == "GET":
         snippets = Contact.objects.all()
@@ -26,7 +26,7 @@ def contact_list(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-def contact_detail(request, contact_id):
+def get_update_or_delete_contact(request, contact_id):
     """Retrieve, update or delete a contact."""
     try:
         contact = Contact.objects.get(id=contact_id)
