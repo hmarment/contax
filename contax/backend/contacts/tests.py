@@ -1,25 +1,20 @@
-from django.test import TestCase
+import pytest
+
 from .models import Contact
 
-# # views (uses reverse)
-# def create_whatever(self, title="only a test", body="yes, this is only a test"):
-# 		return Whatever.objects.create(title=title, body=body, created_at=timezone.now())
+
+@pytest.fixture
+def contact_1(db):
+    contact = Contact.objects.create(
+        first_name="First", last_name="Last", date_of_birth="2000-01-01"
+    )
+    return contact
 
 
-class ContactViewTests(TestCase):
-    fixtures = ["contacts/contact.json"]
-
-    def test_should_create_group(self):
-        contact = Contact.objects.get(pk=1)
-        self.assertEqual(contact.first_name, "Henry") and self.assertEqual(
-            contact.last_name, "Marment"
-        )
-
-
-# def test_contact_list_view(self):
-#     w = self.create_whatever()
-#     url = reverse("whatever.views.whatever")
-#     resp = self.client.get(url)
-
-#     self.assertEqual(resp.status_code, 200)
-#     self.assertIn(w.title, resp.content)
+def test_create_user(db, contact_1):
+    contact = Contact.objects.get(pk=1)
+    assert (
+        contact.first_name == "First"
+        and contact.last_name == "Last"
+        and contact.date_of_birth.isoformat() == "2000-01-01"
+    )
