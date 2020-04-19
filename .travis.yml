@@ -12,7 +12,7 @@ python:
 
 before_install:
 - pip install poetry
-- psql -c 'create database contax;' -U contax
+- psql -c 'create database contax;' -U postgres
 
 install:
 - poetry install -v
