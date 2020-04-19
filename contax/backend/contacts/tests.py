@@ -163,7 +163,7 @@ def test_valid_delete_contact(client, db, contact_1):
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
-def test_invalid_delete_puppy(client, db):
+def test_invalid_delete_contact(client, db):
     """Test deletion of a non-existent contact."""
     response = client.delete(
         reverse("get_delete_update_contact", kwargs={"contact_id": 30})
