@@ -10,4 +10,4 @@ install:
 - poetry install -v
 
 script:
-  - cd ./contax/contax/backend && pytest
+  - pytest contax/backend
