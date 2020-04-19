@@ -1,0 +1,21 @@
+language: python
+
+services:
+  - postgresql
+
+env:
+  DB_USERNAME=postgres
+  DB_PASSWORD=""
+
+python:
+- '3.7'
+
+before_install:
+- pip install poetry
+- psql -c 'create database contax;' -U postgres
+
+install:
+- poetry install -v
+
+script:
+  - pytest contax/backend
