@@ -92,7 +92,7 @@ def update_or_delete_contact_email_address(request, contact_id, email_id):
 
 
 @api_view(["GET", "POST"])
-def list_or_add_contact_postal_address(request):
+def list_or_add_postal_address(request):
     """List all postal addresses, or create a new postal address."""
     if request.method == "GET":
         snippets = PostalAddress.objects.all()
@@ -108,10 +108,10 @@ def list_or_add_contact_postal_address(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-def get_update_or_delete_contact_postal_address(request, contact_id):
+def get_update_or_delete_postal_address(request, postal_address_id):
     """Retrieve, update or delete a postal_address."""
     try:
-        postal_address = PostalAddress.objects.get(id=contact_id)
+        postal_address = PostalAddress.objects.get(id=postal_address_id)
     except PostalAddress.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -123,7 +123,7 @@ def get_update_or_delete_contact_postal_address(request, contact_id):
         serializer = PostalAddressSerializer(postal_address, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "DELETE":

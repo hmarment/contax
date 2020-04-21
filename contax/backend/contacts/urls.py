@@ -21,12 +21,12 @@ urlpatterns = [
     ),
     path(
         "postal_addresses/",
-        views.list_or_add_contact_postal_address,
-        name="list_or_add_contact_postal_address",
+        views.list_or_add_postal_address,
+        name="list_or_add_postal_address",
     ),
     path(
-        "postal_addresses/<int:contact_id>",
-        views.get_update_or_delete_contact_postal_address,
-        name="get_update_or_delete_contact_postal_address",
+        "postal_addresses/<int:postal_address_id>",
+        views.get_update_or_delete_postal_address,
+        name="get_update_or_delete_postal_address",
     ),
 ]

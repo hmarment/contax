@@ -5,8 +5,8 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from contacts.models import Contact, EmailAddress
-from contacts.serializers import ContactSerializer
+from contacts.models import Contact, EmailAddress, PostalAddress
+from contacts.serializers import ContactSerializer, PostalAddressSerializer
 
 
 @pytest.fixture
@@ -60,7 +60,7 @@ def invalid_email_payload(contact_1):
 
 
 # tests for list_or_create_contact method
-def test_list_or_create_contact__get_all_contacts(client, contact_1, contact_2):
+def test_list_or_create_contact__get_all_contacts(client, db):
     """Fetch contacts from API and compare to database query."""
 
     # fetch via API
@@ -132,6 +132,7 @@ def test_get_update_or_delete_contact__valid_update_contact(
 def test_get_update_or_delete_contact__invalid_update_contact(
     client, db, contact_1, invalid_contact_payload
 ):
+    """Test updating an address with an invalid payload."""
     response = client.put(
         reverse("get_delete_update_contact", kwargs={"contact_id": contact_1.pk}),
         data=json.dumps(invalid_contact_payload),
@@ -272,3 +273,137 @@ def test_update_or_delete_contact_email_address__delete_existing(
         ),
     )
     assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+@pytest.fixture
+def valid_postal_address_payload():
+    """Return valid payload for creating a postal address."""
+    return {
+        "street": "11 Downing Street",
+        "city": "London",
+        "post_code": "SW1A 2AA",
+        "country": "GB",
+    }
+
+
+@pytest.fixture
+def invalid_postal_address_payload():
+    """Return invalid payload for creating a postal address."""
+    return {"street": None, "city": "London", "post_code": "SW1A 2AA", "country": "GB"}
+
+
+# tests for list_or_add_contact_postal_address method
+def test_list_or_create_postal_address__get_all(client, db):
+    """Fetch contacts from API and compare to database query."""
+
+    # fetch via API
+    response = client.get(reverse("list_or_add_postal_address"))
+    # get data from db
+    addresses = PostalAddress.objects.all()
+    serializer = PostalAddressSerializer(addresses, many=True)
+    assert response.data == serializer.data
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_list_or_create_postal_address__create_valid_address(
+    client, db, valid_postal_address_payload
+):
+    """Test creating a contact via API."""
+    response = client.post(
+        reverse("list_or_add_postal_address"),
+        data=json.dumps(valid_postal_address_payload),
+        content_type="application/json",
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+
+def test_list_or_create_postal_address__create_invalid_address(
+    client, db, invalid_postal_address_payload
+):
+    """Test that invalid input returns an error."""
+
+    response = client.post(
+        reverse("list_or_add_postal_address"),
+        data=json.dumps(invalid_postal_address_payload),
+        content_type="application/json",
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+# tests for get_update_or_delete_postal_address method
+def test_get_update_or_delete_postal_address__get_valid_single_address(
+    client, postal_address_1
+):
+    """Test fetching an existing address."""
+    response = client.get(
+        reverse(
+            "get_update_or_delete_postal_address",
+            kwargs={"postal_address_id": postal_address_1.pk},
+        )
+    )
+    address = PostalAddress.objects.get(pk=postal_address_1.pk)
+    serializer = PostalAddressSerializer(address)
+    assert response.data == serializer.data
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_get_update_or_delete_postal_address__get_invalid_single_postal_address(
+    client, db
+):
+    """Test fetching an address that does not exist."""
+    response = client.get(
+        reverse("get_update_or_delete_postal_address", kwargs={"postal_address_id": 30})
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_get_update_or_delete_postal_address__valid_update_address(
+    client, db, postal_address_1, valid_postal_address_payload
+):
+    """Test updating an existing address."""
+    response = client.put(
+        reverse(
+            "get_update_or_delete_postal_address",
+            kwargs={"postal_address_id": postal_address_1.pk},
+        ),
+        data=json.dumps(valid_postal_address_payload),
+        content_type="application/json",
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_get_update_or_delete_postal_address__invalid_update_address(
+    client, db, postal_address_1, invalid_postal_address_payload
+):
+    """Test updating an existing address with an invalid payload."""
+    response = client.put(
+        reverse(
+            "get_update_or_delete_postal_address",
+            kwargs={"postal_address_id": postal_address_1.pk},
+        ),
+        data=json.dumps(invalid_postal_address_payload),
+        content_type="application/json",
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_get_update_or_delete_postal_address__valid_delete_address(
+    client, db, postal_address_1
+):
+    """Test deletion of an existing address."""
+    response = client.delete(
+        reverse(
+            "get_update_or_delete_postal_address",
+            kwargs={"postal_address_id": postal_address_1.pk},
+        )
+    )
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+def test_get_update_or_delete_postal_address__invalid_delete_address(client, db):
+    """Test deletion of a non-existent address."""
+    response = client.delete(
+        reverse("get_update_or_delete_postal_address", kwargs={"postal_address_id": 30})
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND

@@ -1,6 +1,6 @@
 import pytest
 
-from contacts.models import Contact, EmailAddress
+from contacts.models import Contact, EmailAddress, PostalAddress
 
 
 @pytest.fixture
@@ -51,4 +51,25 @@ def contact_1_email(db, contact_1, email_factory):
     email_address = f"{contact_1.first_name}@{contact_1.last_name}.com"
     return email_factory(
         contact=contact_1, name="Personal", email_address=email_address
+    )
+
+
+@pytest.fixture
+def postal_address_factory(db):
+    """Create a postal address."""
+
+    def create_address(street, city, post_code, country, state=None):
+        address = PostalAddress.objects.create(
+            street=street, city=city, post_code=post_code, country=country, state=state
+        )
+        return address
+
+    return create_address
+
+
+@pytest.fixture
+def postal_address_1(db, postal_address_factory):
+    """Create a first test address."""
+    return postal_address_factory(
+        street="10 Downing Street", city="London", post_code="SW1A 2AA", country="GB"
     )
